@@ -1,0 +1,42 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+driver = webdriver.Chrome()
+wait = WebDriverWait(driver, 10)
+
+driver.get("https://www.saucedemo.com/")
+
+# Locate and fill login fields
+username = wait.until(EC.visibility_of_element_located((By.ID, "user-name")))
+password = driver.find_element(By.ID, "password")
+
+username.send_keys("standard_user")
+password.send_keys("secret_sauce")
+
+# Click login
+driver.find_element(By.ID, "login-button").click()
+
+# Add item to cart
+add_button = wait.until(
+    EC.element_to_be_clickable((By.ID, "add-to-cart-sauce-labs-backpack"))
+)
+add_button.click()
+
+# Verify cart badge count = 1
+cart_badge = wait.until(
+    EC.visibility_of_element_located((By.CLASS_NAME, "shopping_cart_badge"))
+)
+assert cart_badge.text == "1"
+
+# Go to cart
+driver.find_element(By.ID, "shopping_cart_container").click()
+
+# Verify cart page title
+cart_title = wait.until(
+    EC.visibility_of_element_located((By.CLASS_NAME, "title"))
+)
+assert cart_title.text == "Your Cart"
+
+driver.quit()
